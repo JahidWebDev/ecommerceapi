@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 dbConnection();  // DB connect
-
+app.use(express.json()); 
 app.use(router);  // Use router for API routes
 
 app.listen(PORT, () => {
