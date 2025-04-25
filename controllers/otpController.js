@@ -9,6 +9,7 @@ async function otpController(req, res) {
         // Find user by email
         const user = await usersSchema.findOne({ email });
         
+        
         if (!user) {
             return res.status(404).json({
                 success: false,
@@ -45,11 +46,20 @@ async function otpController(req, res) {
         }
 
         // Update user as verified and clear OTP
-        user.isVerified = true;
-        user.otp = undefined;
-        user.otpExpiry = undefined;
-        await user.save();
+        // user.isVerified = true;
+        // user.otp = undefined;
+        // user.otpExpiry = undefined;
+        // await user.save();
 
+         const updatedUser = await userSchema.findOneAndUpdate(
+            { email }, 
+            { $set: { isVerified: true, otp: "", otpExpiry: "" } },
+            // {
+            //    $set:{isVerified: true,} ,
+            //    $unset:{otpExpiry: "" }, 
+            // }
+            { new: true }
+          );
         return res.status(200).json({
             success: true,
             message: "Email verified successfully",
