@@ -3,7 +3,7 @@ const registratioController = require("../../controllers/registrationControllers
 const {otpController, resendOtpController,} = require("../../controllers/otpController");
 const {loginController, dashBoard, logOut }= require("../../controllers/loginController");
 const authMiddleware = require("../../middleware/authMiddleware");
-const roleMiddleware = require("../../middleware/rolemiddleware");
+const roleMiddleware = require("../../middleware/roleMiddleware");
 const router = express.Router();
 
 router.post("/registration", 
@@ -26,8 +26,7 @@ router.post("/login",
 // );
 router.get("/admin-dashboard", 
   authMiddleware,
-  roleMiddleware
-  ("[admin]"), 
+  roleMiddleware(["admin"]),  // Note: array of roles
   dashBoard
 );
 
