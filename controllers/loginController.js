@@ -5,34 +5,32 @@ const bcrypt = require('bcrypt');
 async function loginController(req, res) {
     try {
         const { email, password } = req.body;
-        
+
         // Input validation
         if (!email) {
             return res.status(400).json({ error: "Please provide your email" });
         }
-        
+
         if (!emailValidation(email)) {
             return res.status(400).json({ error: "Email is not valid" });
         }
-        
+
         if (!password) {
             return res.status(400).json({ error: "Please provide your password" });
         }
 
-        // Find user
-        const existingUser = await usersSchema.findOne({ email });
         
-        if (!existingUser) {
-            return res.status(404).json({ error: "User not found" });
+        const existingUser = await usersSchema.find({ email });
+        if (!existingUser.length === 0 ) {
+            return res.status(404).json({ error: "User is not found" });
         }
-        
-        if (!existingUser.isVerified) {
+
+        if (!existingUser[0].isVerified) {
             return res.status(403).json({ error: "Email is not verified" });
         }
 
-        // Compare password
-        const isMatch = await bcrypt.compare(password, existingUser.password);
         
+        const isMatch = await bcrypt.compare(password, existingUser.password);
         if (!isMatch) {
             return res.status(401).json({ error: "Invalid password" });
         }
@@ -43,6 +41,7 @@ async function loginController(req, res) {
             id: existingUser._id,
             email: existingUser.email,
             firstName: existingUser.firstName,
+            role: existingUser.role,
         };
 
         // Successful login response
@@ -61,6 +60,8 @@ async function loginController(req, res) {
     }
 }
 
+    
+
 function logOut(req, res) {
     req.session.destroy(function (err) {
         if (err) {
@@ -74,9 +75,13 @@ function logOut(req, res) {
 
 
 function dashBoard(req,res) {
-    res.status(200).json({
-        message: "welcome to dashboard "
-    })
+  if (!req.session.isAuth) {
+    return res.json({error: "Unauthorized user"})    
+  };
+  if (!req.session.user.role === "admin") {
+    return res.json({error: `Welcome to Admin Dashboard :${req.session.user.firstName}`});    
+  };
+
 }
 
 module.exports = {loginController, dashBoard, logOut };

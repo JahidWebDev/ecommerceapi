@@ -32,6 +32,11 @@ const usersSchema = new Schema({
     type: Boolean,
     default: false,
   },
+  role:{
+    type: String,
+    default: "user",
+    enum:["user", "admin"],
+  }
 });
 
 module.exports = mongoose.model("UserList", usersSchema);
