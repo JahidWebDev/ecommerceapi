@@ -57,24 +57,33 @@ async function loginController(req, res) {
 function logOut(req, res) {
   req.session.destroy(function (err) {
     if (err) {
-      return res.status(500).json({ error: "Failed to destroy session" });
+      res.status(400).json({ erorr: "something is error" });
     }
-    res.status(200).json({
-      message: "Logout successful",
-    });
+  });
+  res.status(200).json({
+    error: "Logout successfully done",
   });
 }
 
 function dashBoard(req, res) {
+  console.log(req.session.user.role);
+
   if (!req.session.isAuth) {
     return res.status(401).json({ error: "Unauthorized user" });
   }
-
+  //     Condition Problem
   if (req.session.user.role === "admin") {
     return res.status(200).json({
       message: `Welcome to Admin Dashboard, ${req.session.user.firstName}`,
     });
   }
+  if (req.session.user.role === "user") {
+    return res.status(200).json({
+      message: `Welcome to User Dashboard, ${req.session.user.firstName}`,
+    });
+  }
+
+  //     Condition Problem
 
   return res.status(403).json({
     error: "Access denied. Admin privileges required",

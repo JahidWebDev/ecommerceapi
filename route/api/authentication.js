@@ -24,11 +24,9 @@ router.post("/login",
 // router.get("/dash-board",  
 //   authMiddleware, dashBoard
 // );
-router.get("/admin-dashboard", 
-  authMiddleware,
-  roleMiddleware(["admin"]),  // Note: array of roles
-  dashBoard
-);
+router.get("/admin-dashboard", authMiddleware(["admin"]), dashBoard);
+
+router.get("/user-dashboard", authMiddleware(["user"]), dashBoard);
 
 // router.get("/user-dashboard", 
 //   authMiddleware,
