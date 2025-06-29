@@ -16,7 +16,7 @@ const store = new MongoDBStore({
 });
 app.use(session({
   secret: 'MERN2402',
-  resave: false,
+  resave: false,  
   saveUninitialized: true,
   cookie: { secure: false },
   store: store,

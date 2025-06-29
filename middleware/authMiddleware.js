@@ -1,17 +1,29 @@
-const authMiddleware = (allowedRoles = []) => {
-  return (req, res, next) => {
-    const user = req.session?.user;
+// const authMiddleware = (allowedRoles = []) => {
+//   return (req, res, next) => {
+//     const user = req.session?.user;
 
-    if (!user) {
-      return res.status(401).json({ error: "Unauthorized: No user session found" });
-    }
+//     if (!user) {
+//       return res.status(401).json({ error: "Unauthorized: No user session found" });
+//     }
 
-    if (!user.role || !allowedRoles.includes(user.role)) {
-      return res.status(403).json({ error: "Forbidden: Insufficient permissions" });
-    }
+//     if (!user.role || !allowedRoles.includes(user.role)) {
+//       return res.status(403).json({ error: "Forbidden: Insufficient permissions" });
+//     }
 
+//     next();
+//   };
+// };
+
+// module.exports = authMiddleware;
+
+
+function authMiddleware(req, res, next) {
+  if (req.session.isAuth) {
     next();
-  };
-};
+  }else{
+    res.json({error: "Unauthorized user"})
+
+  }
+}
 
 module.exports = authMiddleware;

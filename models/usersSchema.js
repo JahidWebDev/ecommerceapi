@@ -25,7 +25,7 @@ const usersSchema = new Schema({
     type: String,
   },
   otpExpiry:{
-    type:Date,
+    type: Date,
     default: Date.now,
   },
   isVerified: {

@@ -25,37 +25,24 @@ async function otpController(req, res) {
       });
     }
 
-    // Check if OTP matches
-    if (user.otp !== otp) {
+    if (user.otp !== otp || user.otpExpiry < new Date()) {
       return res.status(401).json({
         success: false,
         message: "Invalid OTP",
         errorCode: "INVALID_OTP",
       });
     }
-
-    // Check if OTP is expired
-    if (user.otpExpiry < new Date()) {
-      return res.status(401).json({
-        success: false,
-        message: "OTP has expired",
-        errorCode: "OTP_EXPIRED",
-      });
-    }
-
-    // Update user as verified and clear OTP
+    //  Update user as verified and clear OTP
     // user.isVerified = true;
     // user.otp = undefined;
     // user.otpExpiry = undefined;
     // await user.save();
-
-    const updatedUser = await usersSchema.findOneAndUpdate(
+    const updateUser = await usersSchema.findOneAndUpdate(
       { email },
-      { $set: { isVerified: true, otp: "", otpExpiry: "" } },
-      // {
-      //    $set:{isVerified: true,} ,
-      //    $unset:{otpExpiry: "" },
-      // }
+      {
+        $set: { isVerified: true },
+        $unset: { otp: "", otpExpiry: "" },
+      },
       { new: true }
     );
     return res.status(200).json({
@@ -67,6 +54,49 @@ async function otpController(req, res) {
         lastName: user.lastName,
       },
     });
+
+    // // Check if OTP matches
+    // if (user.otp !== otp) {
+    //   return res.status(401).json({
+    //     success: false,
+    //     message: "Invalid OTP",
+    //     errorCode: "INVALID_OTP",
+    //   });
+    // }
+
+    // // Check if OTP is expired
+    // if (user.otpExpiry < new Date()) {
+    //   return res.status(401).json({
+    //     success: false,
+    //     message: "OTP has expired",
+    //     errorCode: "OTP_EXPIRED",
+    //   });
+    // }
+
+    // Update user as verified and clear OTP
+    // user.isVerified = true;
+    // user.otp = undefined;
+    // user.otpExpiry = undefined;
+    // await user.save();
+
+    // const updatedUser = await usersSchema.findOneAndUpdate(
+    //   { email },
+    //   { $set: { isVerified: true, otp: "", otpExpiry: "" } },
+    // {
+    //    $set:{isVerified: true,} ,
+    //    $unset:{otpExpiry: "" },
+    // }
+    // { new: true }
+    // );
+    // return res.status(200).json({
+    //   success: true,
+    //   message: "Email verified successfully",
+    //   data: {
+    //     email: user.email,
+    //     firstName: user.firstName,
+    //     lastName: user.lastName,
+    //   },
+    // });
   } catch (error) {
     console.error("OTP verification error:", error);
     return res.status(500).json({
@@ -84,25 +114,30 @@ async function resendOtpController(req, res) {
   if (!email) {
     return res.json({ message: "please give a email" });
   }
-  
-  
+
   const user = await usersSchema.findOne({ email });
-  
-  if (!user) {
-    return res.status(404).json({ message: "User not found" });
-  }
-  
-  const otp = crypto.randomInt(10000000, 99999999).toString();
+
+  // if (!user) {
+  //   return res.status(404).json({ message: "User not found" });
+  // }
+
+  const otp = crypto.randomInt(100000, 999999).toString();
   console.log(otp);
   const otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
-  
-  user.otp = otp;
-  user.otpExpiry = otpExpiry;
-  
-  await user.save();
-  
+  const updateUser = await usersSchema.findOneAndUpdate(
+    { email },
+    {
+      $set: { otp, otpExpiry },
+    },
+    { new: true }
+  );
+  // user.otp = otp;
+  // user.otpExpiry = otpExpiry;
+
+  // await user.save();
+
   res.status(200).json({
-    message: "Resend OTP send successfully"
+    message: "Resend OTP send successfully",
   });
 }
 

@@ -19,6 +19,7 @@ async function loginController(req, res) {
     }
 
     const existingUser = await usersSchema.findOne({ email });
+
     if (!existingUser) {
       return res.status(404).json({ error: "User not found" });
     }
@@ -57,7 +58,7 @@ async function loginController(req, res) {
 function logOut(req, res) {
   req.session.destroy(function (err) {
     if (err) {
-      res.status(400).json({ erorr: "something is error" });
+      res.status(400).json ({ erorr: "Something is error" });
     }
   });
   res.status(200).json({
@@ -66,9 +67,7 @@ function logOut(req, res) {
 }
 
 function dashBoard(req, res) {
-  console.log(req.session.user.role);
-
-  if (!req.session.isAuth) {
+   if (!req.session.isAuth) {
     return res.status(401).json({ error: "Unauthorized user" });
   }
   //     Condition Problem
