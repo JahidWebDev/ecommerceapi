@@ -49,16 +49,51 @@ async function getAllCategory(req, res) {
 }
 
 async function getSingleCategoryController(req, res) {
-  const {id} = req.params;
-   
-   
-  const getSingleCategory = await categorySchema.findOne({_id: id})
+  const { id } = req.params;
+
+  const getSingleCategory = await categorySchema.findOne({ _id: id });
   res.status(500).json({
-      message: "GetSingleCategory ",
-      status: "Success",
-      data: getSingleCategory
-  })
-  
+    message: "GetSingleCategory ",
+    status: "Success",
+    data: getSingleCategory,
+  });
 }
 
-module.exports = {categoryController, getAllCategory, getSingleCategoryController};
+async function updateSingleCategoryController(req, res) {
+  try {
+    const { id } = req.params;
+    console.log(id);
+
+    const { name, description } = req.body;
+    const updateCategory = await categorySchema.findById(id);
+    if (!name) {
+      updateCategory.name = name;
+    }else if(name){
+      updateCategory.name = name;
+    }
+    if (description) {
+      updateCategory.description = description;
+    }else if(!description){
+      updateCategory.name = name;
+    }
+    await updateCategory.save();
+    res.status(201).json({
+      message: "Category update Successful",
+      status: "Success",
+      data: updateCategory,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      status: "error",
+      error: error.message,
+    });
+  }
+}
+
+module.exports = {
+  categoryController,
+  getAllCategory,
+  getSingleCategoryController,
+  updateSingleCategoryController,
+};

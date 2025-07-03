@@ -17,7 +17,12 @@ async function subCategoryController(req, res) {
     });
 
     await subCategory.save();
-
+    
+   await categorySchema.findOneAndUpdate(
+  { _id: foundCategory._id }, 
+  { $push: { subCategory: subCategory._id } }, // update operation
+  { new: true }
+);
     res.status(200).json({
       message: "Create subcategory successfully",
       status: "success",
