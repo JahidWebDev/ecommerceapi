@@ -91,9 +91,32 @@ async function updateSingleCategoryController(req, res) {
   }
 }
 
+
+async function deleteCategoryController(req,res) {
+try{
+  
+const {id} = req.params
+
+const deleteCategory = await categorySchema.findByIdAndDelete(id) 
+res.status(201).json({
+      message: "Category Delete Successful",
+      status: "Success",
+      data: deleteCategory,
+    });
+}catch(error){
+ res.status(500).json({
+      message: "Internal Server Error",
+      status: "error",
+      error: error.message,
+    });
+}
+
+}
+
 module.exports = {
   categoryController,
   getAllCategory,
   getSingleCategoryController,
   updateSingleCategoryController,
+  deleteCategoryController,
 };

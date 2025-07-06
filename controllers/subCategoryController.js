@@ -2,31 +2,29 @@ const categorySchema = require("../models/categorySchema");
 const subCategorySchema = require("../models/subCategorySchema");
 
 async function subCategoryController(req, res) {
-  console.log("ok cool");
-
   const { name, description, category } = req.body;
   console.log(req.body);
 
   try {
-    const foundCategory = await categorySchema.findOne({ name: category });
+    const foundCategory = await categorySchema.findOneAndUpdate({ name: category });
 
-    const subCategory = new subCategorySchema({
+    const subCategorys = new subCategorySchema({
       name,
       description,
       category: foundCategory._id,
     });
 
-    await subCategory.save();
-    
-   await categorySchema.findOneAndUpdate(
-  { _id: foundCategory._id }, 
-  { $push: { subCategory: subCategory._id } }, // update operation
-  { new: true }
-);
+    await subCategorys.save();
+
+    await categorySchema.findOneAndUpdate(
+      { _id: foundCategory._id },
+      { $push: { subCategory: subCategorys._id } },
+      { new: true }
+    );
     res.status(200).json({
       message: "Create subcategory successfully",
       status: "success",
-      data: subCategory,
+      data: subCategorys,
     });
   } catch (err) {
     console.error("Error creating subcategory:", err.message);
@@ -39,4 +37,3 @@ async function subCategoryController(req, res) {
 }
 
 module.exports = subCategoryController;
-
