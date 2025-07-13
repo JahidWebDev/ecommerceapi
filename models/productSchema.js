@@ -19,7 +19,7 @@ const productSchema = new Schema(
     },
     brand: {
       type: String,
-      trim: true,
+      trim: true, 
     },
     category: {
       type: Schema.Types.ObjectId,
@@ -29,12 +29,12 @@ const productSchema = new Schema(
     subCategory: {
       type: Schema.Types.ObjectId,
       ref: "SubCategory",
-       required: true,
+      required: true,
     },
     color: {
       type: String,
       trim: true,
-    },
+    }, 
     storage: {
       type: String,
       trim: true,
@@ -47,10 +47,10 @@ const productSchema = new Schema(
       type: String,
       trim: true,
     },
-    images: {
-      type: [String],
-      default: [],
-    },
+   images: {
+  type: [String], // array of strings for multiple images
+  default: []
+},
     inStock: {
       type: Boolean,
       default: true,

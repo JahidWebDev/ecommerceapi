@@ -1,3 +1,4 @@
+const uploadImage = require("../middleware/cloudinary");
 const productSchema = require("../models/productSchema");
 
 async function createProductController(req, res) {
@@ -10,15 +11,19 @@ async function createProductController(req, res) {
     storage,
     ram,
     size,
-    images,
     inStock,
     quantity,
     category,
     subCategory,
   } = req.body;
-console.log(req.body);
 
   try {
+    if (!req.file) {
+      return res.status(400).json({ message: "Image file is required" });
+    }
+
+    const imgPath = req.file.path;
+    const imgUrl = await uploadImage(imgPath);
     const Product = new productSchema({
       name,
       description,
@@ -28,13 +33,13 @@ console.log(req.body);
       storage,
       ram,
       size,
-      images,
+      images: [imgUrl.secure_url],
       inStock,
       quantity,
       category,
-      subCategory
+      subCategory,
     });
-        
+
     await Product.save();
 
     res.status(201).json({
@@ -42,12 +47,11 @@ console.log(req.body);
       status: "success",
       data: Product,
     });
-
   } catch (error) {
+    console.error("Error creating product:", error);
     res.status(500).json({
       message: "Error creating product",
       status: "error",
-      
     });
   }
 }
