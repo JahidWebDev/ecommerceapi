@@ -13,8 +13,10 @@ async function createProductController(req, res) {
     size,
     inStock,
     quantity,
+    discount,
     category,
     subCategory,
+
   } = req.body;
 
   try {
@@ -38,6 +40,7 @@ async function createProductController(req, res) {
       quantity,
       category,
       subCategory,
+      discount,
     });
 
     await Product.save();
