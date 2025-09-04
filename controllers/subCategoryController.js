@@ -36,4 +36,54 @@ async function subCategoryController(req, res) {
   }
 }
 
-module.exports = subCategoryController;
+
+async function deleteSubCategoryControllers(req, res) {
+  const { id } = req.params;
+
+  try {
+    const deletesubCategory = await subCategorySchema.findByIdAndDelete(id);
+
+    if (!deletesubCategory) {
+      return res.status(404).json({
+        status: "error",
+        message: "Subcategory not found",
+      });
+    }
+
+    // Remove subcategory reference from Category
+    await categorySchema.findByIdAndUpdate(
+      subCategory.category,
+      { $pull: { subCategory: subCategory._id } }
+    );
+
+    res.status(200).json({
+      message: "Subcategory deleted successfully",
+      status: "success",
+    });
+  } catch (err) {
+    console.error("Error deleting subcategory:", err.message);
+    res.status(500).json({
+      status: "error",
+      message: "Server error",
+      error: err.message,
+    });
+  }
+}
+
+async function getAllSubCategories(req, res) {
+  try {
+    const subCategories = await subCategorySchema.find().populate("category");
+    res.status(200).json({
+      status: "success",
+      data: subCategories,
+    });
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+}
+module.exports = {
+  subCategoryController,
+  deleteSubCategoryControllers,
+  getAllSubCategories
+
+};
